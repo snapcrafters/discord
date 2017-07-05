@@ -29,7 +29,9 @@ Snapcrafters ([join us]()) are working to land snap install documentation and
 the [snapcraft.yaml](https://github.com/snapcrafters/discord/blob/master/snap/snapcraft.yaml)
 upstream so Discord can authoritatively publish future releases.
 
-  - [x] Fork the [Snapcrafters template]() repository to your own GitHub account
+  - [x] Fork the [Snapcrafters template](https://github.com/snapcrafters/fork-and-rename-me) repository to your own GitHub account
+  - [x] Rename the forked Snapcrafters template repository
+  - [x] Update logos and references to `[Project]` and `[my-snap-name]`
   - [x] Create a snap that runs in `devmode`
   - [x] Register the snap in the store, **using the preferred upstream name**
   - [x] Add a screenshot to this `README.md`
@@ -47,11 +49,11 @@ upstream so Discord can authoritatively publish future releases.
   - [ ] Post an announcement in the [Snapcraft Forum](https://forum.snapcraft.io) - [link]()
   - [ ] Submit a pull request or patch upstream that adds snap install documentation - [link]()
   - [ ] Submit a pull request or patch upstream that adds the `snapcraft.yaml` and any required assets/launchers - [link]()
+  - [x] Add upstream contact information to the `README.md`
   - If upstream accept the PR:
     - [ ] Request upstream create a Snap store account
-    - [x] Add upstream contact information to the `README.md`
     - [ ] Contact the Snap Advocacy team to request the snap be transferred to upstream
- - [x] Ask the Snap Advocacy team to celebrate the snap - [link](https://insights.ubuntu.com/2017/05/04/discord-is-now-available-as-a-snap-for-ubuntu-and-other-distributions/)
+  - [x] Ask the Snap Advocacy team to celebrate the snap - [link](https://insights.ubuntu.com/2017/05/04/discord-is-now-available-as-a-snap-for-ubuntu-and-other-distributions/)
 
 If you have any questions, [post in the Snapcraft forum](https://forum.snapcraft.io).
 
