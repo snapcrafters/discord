@@ -12,7 +12,7 @@ confinement: strict
 parts:
   discord:
     plugin: dump
-    source: https://dl.discordapp.net/apps/linux/0.0.1/discord-0.0.1.deb
+    source: https://dl.discordapp.net/apps/linux/0.0.2/discord-0.0.2.deb
     source-type: deb
     # Correct path to icon.
     prepare: |
