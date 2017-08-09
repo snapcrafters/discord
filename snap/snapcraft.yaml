@@ -46,3 +46,4 @@ apps:
       - unity7
       - x11
       - opengl
+      - bluez
