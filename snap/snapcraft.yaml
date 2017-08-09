@@ -28,6 +28,7 @@ parts:
       - libpulse0
       - libxss1
       - libxtst6
+      - libc++1
 
 apps:
   discord:
