@@ -45,3 +45,4 @@ apps:
       - screen-inhibit-control
       - unity7
       - x11
+      - opengl
