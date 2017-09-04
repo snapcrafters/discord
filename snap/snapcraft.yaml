@@ -22,13 +22,13 @@ parts:
     stage-packages:
       - gconf2
       - libasound2
+      - libc++1
       - libnotify4
       - libnspr4
       - libnss3
       - libpulse0
       - libxss1
       - libxtst6
-      - libc++1
 
 apps:
   discord:
@@ -37,14 +37,15 @@ apps:
     command: env TMPDIR=$XDG_RUNTIME_DIR PATH=/usr/local/bin:${PATH} ${SNAP}/bin/desktop-launch $SNAP/usr/share/discord/Discord
     desktop: usr/share/applications/discord.desktop
     plugs:
+      - bluez
       - browser-support
       - gsettings
       - home
       - mount-observe
       - network
+      - opengl
       - pulseaudio
       - screen-inhibit-control
       - unity7
+      - webcam
       - x11
-      - opengl
-      - bluez
