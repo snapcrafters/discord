@@ -39,6 +39,7 @@ apps:
     plugs:
       - bluez
       - browser-support
+      - camera
       - gsettings
       - home
       - mount-observe
@@ -47,5 +48,4 @@ apps:
       - pulseaudio
       - screen-inhibit-control
       - unity7
-      - webcam
       - x11
