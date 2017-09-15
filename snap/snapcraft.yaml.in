@@ -37,7 +37,6 @@ apps:
     command: env TMPDIR=$XDG_RUNTIME_DIR PATH=/usr/local/bin:${PATH} ${SNAP}/bin/desktop-launch $SNAP/usr/share/discord/Discord
     desktop: usr/share/applications/discord.desktop
     plugs:
-      - bluez
       - browser-support
       - camera
       - gsettings
@@ -47,5 +46,6 @@ apps:
       - opengl
       - pulseaudio
       - screen-inhibit-control
+      - system-observe
       - unity7
       - x11

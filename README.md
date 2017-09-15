@@ -15,6 +15,8 @@ distributions.</p>
 ## Install
 
     sudo apt install snapd-xdg-open
+    sudo snap connect discord:camera core:camera
+    sudo snap connect discord:system-observe core:system-observe
     sudo snap install discord
 
 ([Don't have snapd installed?](https://snapcraft.io/docs/core/install))
