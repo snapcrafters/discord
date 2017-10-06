@@ -20,9 +20,9 @@ parts:
     after:
       - desktop-gtk2
     stage-packages:
-      - gconf2
       - libasound2
       - libc++1
+      - libgconf2-4
       - libnotify4
       - libnspr4
       - libnss3
@@ -32,18 +32,22 @@ parts:
 
 apps:
   discord:
+    command: bin/desktop-launch $SNAP/usr/share/discord/Discord
+    desktop: usr/share/applications/discord.desktop
     # Correct the TMPDIR path for Chromium Framework/Electron to
     # ensure libappindicator has readable resources.
-    command: env TMPDIR=$XDG_RUNTIME_DIR PATH=/usr/local/bin:${PATH} ${SNAP}/bin/desktop-launch $SNAP/usr/share/discord/Discord
-    desktop: usr/share/applications/discord.desktop
+    environment:
+      TMPDIR: $XDG_RUNTIME_DIR
     plugs:
+      - bluez
       - browser-support
       - camera
       - gsettings
       - home
       - mount-observe
       - network
-      - opengl
+      - network-control
+      - process-control
       - pulseaudio
       - screen-inhibit-control
       - system-observe
