@@ -46,7 +46,7 @@ apps:
       - home
       - mount-observe
       - network
-      - network-control
+      - network-observe
       - process-control
       - pulseaudio
       - screen-inhibit-control

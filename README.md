@@ -18,7 +18,7 @@ distributions.</p>
     sudo snap install discord
     sudo snap connect discord:camera core:camera
     sudo snap connect discord:mount-observe core:mount-observe
-    sudo snap connect discord:network-control core:network-control
+    sudo snap connect discord:network-observe core:network-observe
     sudo snap connect discord:process-control core:process-control
     sudo snap connect discord:system-observe core:system-observe
 
