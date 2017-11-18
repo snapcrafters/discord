@@ -29,6 +29,7 @@ parts:
       - libpulse0
       - libxss1
       - libxtst6
+      - fonts-noto-cjk
 
 apps:
   discord:
