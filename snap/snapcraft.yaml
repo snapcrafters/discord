@@ -30,6 +30,7 @@ parts:
       - libxss1
       - libxtst6
       - fonts-noto-cjk
+      - libatomic1
 
 apps:
   discord:
