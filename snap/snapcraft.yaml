@@ -29,7 +29,6 @@ parts:
       - libpulse0
       - libxss1
       - libxtst6
-      - fonts-noto-cjk
       - libatomic1
 
 apps:
@@ -44,6 +43,8 @@ apps:
       - bluez
       - browser-support
       - camera
+      - desktop
+      - desktop-legacy
       - gsettings
       - home
       - mount-observe
@@ -54,4 +55,4 @@ apps:
       - screen-inhibit-control
       - system-observe
       - unity7
-      - x11
+      - wayland
