@@ -1,5 +1,5 @@
 name: discord
-version: 0.0.2
+version: 0.0.3
 summary: Free voice and text chat
 description: |
  All-in-one voice and text chat for gamers that's free, secure, and
@@ -12,7 +12,7 @@ confinement: strict
 parts:
   discord:
     plugin: dump
-    source: https://dl.discordapp.net/apps/linux/0.0.2/discord-0.0.2.deb
+    source: https://dl.discordapp.net/apps/linux/0.0.3/discord-0.0.3.deb
     source-type: deb
     # Correct path to icon.
     prepare: |
