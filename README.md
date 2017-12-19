@@ -14,7 +14,6 @@ distributions.</p>
 
 ## Install
 
-    sudo apt install snapd-xdg-open
     sudo snap install discord
     sudo snap connect discord:camera core:camera
     sudo snap connect discord:mount-observe core:mount-observe
@@ -50,8 +49,8 @@ Snapcrafters ([join us](https://forum.snapcraft.io/t/join-snapcrafters/1325)) ar
   - [x] Publish the snap in the Snap store stable channel
   - [x] Update the install instructions in this `README.md`
   - [ ] Post an announcement in the [Snapcraft Forum](https://forum.snapcraft.io) - [link]()
-  - [ ] Submit a pull request or patch upstream that adds snap install documentation - [link]()
-  - [ ] Submit a pull request or patch upstream that adds the `snapcraft.yaml` and any required assets/launchers - [link]()
+  - [ ] Submit a pull request or patch upstream that adds snap install documentation - *discussing with upstream*
+  - [ ] Submit a pull request or patch upstream that adds the `snapcraft.yaml` and any required assets/launchers - *discussing with upstream*
   - [x] Add upstream contact information to the `README.md`
   - If upstream accept the PR:
     - [ ] Request upstream create a Snap store account
