@@ -21,6 +21,7 @@ parts:
       - desktop-gtk2
     stage-packages:
       - libasound2
+      - libatomic1
       - libc++1
       - libgconf2-4
       - libnotify4
@@ -29,7 +30,6 @@ parts:
       - libpulse0
       - libxss1
       - libxtst6
-      - libatomic1
 
 apps:
   discord:
@@ -43,16 +43,16 @@ apps:
       - bluez
       - browser-support
       - camera
-      - desktop
-      - desktop-legacy
       - gsettings
       - home
       - mount-observe
       - network
       - network-observe
+      - opengl
       - process-control
       - pulseaudio
       - screen-inhibit-control
       - system-observe
       - unity7
       - wayland
+      - x11
