@@ -51,6 +51,7 @@ apps:
       - bluez
       - browser-support
       - camera
+      - desktop
       - gsettings
       - home
       - mount-observe
