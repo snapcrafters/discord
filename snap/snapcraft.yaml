@@ -12,21 +12,24 @@ confinement: strict
 
 parts:
   discord:
-    install: |
+    plugin: dump
+    source: "https://discordapp.com/api/download?platform=linux&format=deb"
+    source-type: deb
+    override-build: |
+      snapcraftctl build
       DEB_API="https://discordapp.com/api/download?platform=linux&format=deb"
       DEB_URL=$(curl -w "%{url_effective}\n" -I -L -s -S "${DEB_API}" -o /dev/null)
       VERSION=$(echo "${DEB_URL}" | cut -d'/' -f6)
       echo $VERSION > $SNAPCRAFT_STAGE/version
-    plugin: dump
-    source: "https://discordapp.com/api/download?platform=linux&format=deb"
-    source-type: deb
-    # Correct path to icon.
-    prepare: |
+      # Correct path to icon.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' usr/share/discord/discord.desktop
     after:
       - desktop-gtk2
     build-packages:
-      - curl
+      - on amd64:
+        - curl
+        - sed
+      - else fail
     stage-packages:
       - libasound2
       - libatomic1
@@ -38,6 +41,7 @@ parts:
       - libpulse0
       - libxss1
       - libxtst6
+      - xdg-utils
 
 apps:
   discord:
@@ -45,13 +49,18 @@ apps:
     desktop: usr/share/applications/discord.desktop
     # Correct the TMPDIR path for Chromium Framework/Electron to
     # ensure libappindicator has readable resources.
+    # Coerce XDG_CURRENT_DESKTOP to Unity so that App Indicators
+    # are used and do not fall back to Notication Area applets
+    # or disappear completely.
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
+      XDG_CURRENT_DESKTOP: Unity
     plugs:
       - bluez
       - browser-support
       - camera
       - desktop
+      - desktop-legacy
       - gsettings
       - home
       - mount-observe
