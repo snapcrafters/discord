@@ -26,6 +26,7 @@ parts:
     after:
       - desktop-gtk2
     build-packages:
+      # Discord only publishes debs for amd64, so fail builds on other architectures.
       - on amd64:
         - curl
         - sed
