@@ -43,6 +43,8 @@ parts:
       - libxss1
       - libxtst6
       - xdg-utils
+    prime:
+      - -usr/bin/xdg-open
 
 apps:
   discord:
