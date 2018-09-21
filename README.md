@@ -19,6 +19,7 @@ distributions.</p>
     sudo snap connect discord:mount-observe core:mount-observe
     sudo snap connect discord:network-observe core:network-observe
     sudo snap connect discord:process-control core:process-control
+    sudo snap connect discord:removable-media
     sudo snap connect discord:system-observe core:system-observe
 
 ([Don't have snapd installed?](https://snapcraft.io/docs/core/install))
