@@ -10,6 +10,9 @@ description: |
 grade: stable
 confinement: strict
 
+architectures:
+  - build-on: amd64
+
 parts:
   discord:
     plugin: dump
@@ -26,11 +29,8 @@ parts:
     after:
       - desktop-gtk2
     build-packages:
-      # Discord only publishes debs for amd64, so fail builds on other architectures.
-      - on amd64:
-        - curl
-        - sed
-      - else fail
+      - curl
+      - sed
     stage-packages:
       - libasound2
       - libatomic1
