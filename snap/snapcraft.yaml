@@ -27,7 +27,7 @@ parts:
       # Correct path to icon.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${SNAPCRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
     after:
-      - desktop-gtk2
+      - desktop-gtk3
     build-packages:
       - curl
       - sed
