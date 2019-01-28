@@ -58,6 +58,7 @@ apps:
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
       XDG_CURRENT_DESKTOP: Unity
+      DISABLE_WAYLAND: 1
     plugs:
       - bluez
       - browser-support
