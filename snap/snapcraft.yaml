@@ -69,7 +69,7 @@ parts:
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${SNAPCRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
     after:
       - gnome
-      - desktop-gnome-platform
+      #- desktop-gnome-platform
       - libappindicator
     #build-attributes:
       #- no-system-libraries
