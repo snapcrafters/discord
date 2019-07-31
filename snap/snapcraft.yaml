@@ -1,4 +1,5 @@
 name: discord-yamiyukisenpai
+base: core18
 version: latest
 version-script: cat $SNAPCRAFT_STAGE/version
 summary: Free voice and text chat
