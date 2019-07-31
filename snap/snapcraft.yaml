@@ -48,12 +48,45 @@ parts:
       - gnome
     stage-packages:
       - libappindicator3-1
-    build-attributes:
-      - no-system-libraries
+    #build-attributes:
+      #- no-system-libraries
     prime:
       - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libdbusmenu*.so*
       - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libappindicator*.so*
       - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libindicator*.so*
+  desktop-gnome-platform:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    # make-parameters: ["FLAVOR=gtk2"]
+    build-packages:
+      - libgtk2.0-dev
+      - libgtk-3-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk2.0-0
+      - libgtk-3-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk2.0-bin
+      - libgtk-3-bin
+      - unity-gtk2-module
+      - unity-gtk3-module
+      - libappindicator3-1
+      - locales-all
+      - xdg-user-dirs
+      - ibus-gtk
+      - ibus-gtk3
+      - libibus-1.0-5
+    organize:
+      usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gtk-2.0: usr/lib/gtk-2.0
+      usr/lib/$SNAPCRAFT_ARCH_TRIPLET/gtk-3.0: usr/lib/gtk-3.0
 
   discord:
     plugin: dump
@@ -71,8 +104,8 @@ parts:
       - gnome
       - desktop-gnome-platform
       - libappindicator
-    build-attributes:
-      - no-system-libraries
+    #build-attributes:
+      #- no-system-libraries
     build-packages:
       - curl
       - sed
