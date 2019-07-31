@@ -1,4 +1,4 @@
-name: discord
+name: discord-yamiyukisenpai
 version: latest
 version-script: cat $SNAPCRAFT_STAGE/version
 summary: Free voice and text chat
@@ -17,7 +17,7 @@ plugs:
   gnome-3-26-1604:
     interface: content
     target: $SNAP/gnome-platform
-    default-provider: gnome-3-26-1604
+    default-provider: gnome-3-28-1804
   gtk-3-themes:
     interface: content
     target: $SNAP/data-dir/themes
@@ -36,10 +36,10 @@ parts:
     plugin: nil
     build-packages:
       - software-properties-common
-    override-pull: |
-      add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
-      apt -y update
-      apt -y upgrade
+    #override-pull: |
+      #add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
+      #apt -y update
+      #apt -y upgrade
 
   libappindicator:
     plugin: nil
