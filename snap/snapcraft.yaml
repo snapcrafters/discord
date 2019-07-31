@@ -9,7 +9,7 @@ description: |
  servers and hassling with Skype. Simplify your life.
 
 grade: devel
-confinement: devmode
+confinement: strict
 
 architectures:
   - build-on: amd64
