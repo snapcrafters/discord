@@ -7,7 +7,7 @@ description: |
  works on both your desktop and phone. Stop paying for TeamSpeak
  servers and hassling with Skype. Simplify your life.
 
-grade: stable
+grade: devel
 confinement: strict
 
 architectures:
