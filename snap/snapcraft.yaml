@@ -71,8 +71,8 @@ parts:
       - gnome
       - desktop-gnome-platform
       - libappindicator
-    build-attributes:
-      - no-system-libraries
+    #build-attributes:
+      #- no-system-libraries
     build-packages:
       - curl
       - sed
