@@ -1,6 +1,6 @@
 name: discord
-version: latest
-version-script: cat $SNAPCRAFT_STAGE/version
+base: core18
+adopt-info: discord
 summary: Free voice and text chat
 description: |
  All-in-one voice and text chat for gamers that's free, secure, and
@@ -13,47 +13,7 @@ confinement: strict
 architectures:
   - build-on: amd64
 
-plugs:
-  gnome-3-26-1604:
-    interface: content
-    target: $SNAP/gnome-platform
-    default-provider: gnome-3-26-1604
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes
-
 parts:
-  gnome:
-    plugin: nil
-    build-packages:
-      - software-properties-common
-    override-pull: |
-      add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
-      apt -y update
-      apt -y upgrade
-
-  libappindicator:
-    plugin: nil
-    after:
-      - gnome
-    stage-packages:
-      - libappindicator3-1
-    build-attributes:
-      - no-system-libraries
-    prime:
-      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libdbusmenu*.so*
-      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libappindicator*.so*
-      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libindicator*.so*
-
   discord:
     plugin: dump
     source: "https://discordapp.com/api/download?platform=linux&format=deb"
@@ -63,15 +23,9 @@ parts:
       DEB_API="https://discordapp.com/api/download?platform=linux&format=deb"
       DEB_URL=$(curl -w "%{url_effective}\n" -I -L -s -S "${DEB_API}" -o /dev/null)
       VERSION=$(echo "${DEB_URL}" | cut -d'/' -f6)
-      echo $VERSION > $SNAPCRAFT_STAGE/version
+      snapcraftctl set-version $(echo $VERSION)
       # Correct path to icon.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${SNAPCRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
-    after:
-      - gnome
-      - desktop-gnome-platform
-      - libappindicator
-    build-attributes:
-      - no-system-libraries
     build-packages:
       - curl
       - sed
@@ -84,12 +38,14 @@ parts:
       - libnss3
       - libxss1
       - xdg-utils
+      - libappindicator3-1
     prime:
       - -usr/bin/xdg-open
 
 apps:
   discord:
-    command: bin/desktop-launch $SNAP/usr/share/discord/Discord
+    extensions: [gnome-3-28]
+    command: usr/share/discord/Discord
     desktop: usr/share/applications/discord.desktop
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to
