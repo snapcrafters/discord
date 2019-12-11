@@ -13,6 +13,12 @@ confinement: strict
 architectures:
   - build-on: amd64
 
+plugs:
+  gnome-3-28-1804:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-3-28-1804
+
 parts:
   discord:
     plugin: dump
@@ -41,6 +47,14 @@ parts:
       - libappindicator3-1
     prime:
       - -usr/bin/xdg-open
+  cleanup:
+    after: [ discord ]
+    plugin: nil
+    build-snaps: [ gnome-3-28-1804 ]
+    override-prime: |
+        set -eux
+        cd /snap/gnome-3-28-1804/current
+        find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
 
 apps:
   discord:
