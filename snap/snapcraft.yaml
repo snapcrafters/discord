@@ -13,12 +13,6 @@ confinement: strict
 architectures:
   - build-on: amd64
 
-plugs:
-  gnome-3-28-1804:
-    interface: content
-    target: $SNAP/gnome-platform
-    default-provider: gnome-3-28-1804
-
 parts:
   discord:
     plugin: dump
@@ -44,7 +38,6 @@ parts:
       - libnss3
       - libxss1
       - xdg-utils
-      - libappindicator3-1
     prime:
       - -usr/bin/xdg-open
   cleanup:
@@ -58,7 +51,7 @@ parts:
 
 apps:
   discord:
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-34]
     command: usr/share/discord/Discord
     desktop: usr/share/applications/discord.desktop
     environment:
