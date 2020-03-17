@@ -54,6 +54,7 @@ apps:
   discord:
     extensions: [gnome-3-28]
     command: usr/share/discord/Discord --no-sandbox
+    autostart: discord.desktop
     desktop: usr/share/applications/discord.desktop
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to
