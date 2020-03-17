@@ -13,12 +13,6 @@ confinement: strict
 architectures:
   - build-on: amd64
 
-plugs:
-  gnome-3-28-1804:
-    interface: content
-    target: $SNAP/gnome-platform
-    default-provider: gnome-3-28-1804
-
 parts:
   discord:
     plugin: dump
@@ -37,7 +31,6 @@ parts:
       - curl
       - sed
     stage-packages:
-      - libasound2
       - libatomic1
       - libc++1
       - libgconf2-4
@@ -73,12 +66,8 @@ apps:
       # Fallback to XWayland if running in a Wayland session.
       DISABLE_WAYLAND: 1
     plugs:
-      - bluez
       - browser-support
       - camera
-      - desktop
-      - desktop-legacy
-      - gsettings
       - home
       - mount-observe
       - network
@@ -90,5 +79,3 @@ apps:
       - screen-inhibit-control
       - system-observe
       - unity7
-      - wayland
-      - x11
