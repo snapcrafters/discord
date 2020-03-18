@@ -14,7 +14,17 @@ architectures:
   - build-on: amd64
 
 parts:
+  libappindicator:
+    plugin: nil
+    stage-packages:
+      - libappindicator3-1
+    prime:
+      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libdbusmenu*.so*
+      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libappindicator*.so*
+      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libindicator*.so*
+
   discord:
+    after: [libappindicator]
     plugin: dump
     source: "https://discordapp.com/api/download?platform=linux&format=deb"
     source-type: deb
@@ -37,11 +47,10 @@ parts:
       - libnss3
       - libxss1
       - xdg-utils
-      - libappindicator3-1
     prime:
       - -usr/bin/xdg-open
   cleanup:
-    after: [ discord ]
+    after: [discord]
     plugin: nil
     build-snaps: [ gnome-3-28-1804 ]
     override-prime: |
