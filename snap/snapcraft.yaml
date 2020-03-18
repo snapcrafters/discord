@@ -33,7 +33,6 @@ parts:
     stage-packages:
       - libatomic1
       - libc++1
-      - libgconf2-4
       - libnspr4
       - libnss3
       - libxss1
