@@ -1,5 +1,5 @@
 name: discord
-base: core18
+base: core20
 adopt-info: discord
 summary: Free voice and text chat
 description: |
@@ -52,15 +52,15 @@ parts:
   cleanup:
     after: [discord]
     plugin: nil
-    build-snaps: [ gnome-3-28-1804 ]
+    build-snaps: [ gnome-3-38-2004 ]
     override-prime: |
         set -eux
-        cd /snap/gnome-3-28-1804/current
+        cd /snap/gnome-3-38-2004/current
         find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
 
 apps:
   discord:
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
     command: usr/share/discord/Discord --no-sandbox
     autostart: discord.desktop
     desktop: usr/share/applications/discord.desktop
