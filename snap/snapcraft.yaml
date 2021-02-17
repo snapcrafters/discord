@@ -12,6 +12,7 @@ confinement: strict
 
 architectures:
   - build-on: amd64
+compression: lzo
 
 parts:
   libappindicator:
