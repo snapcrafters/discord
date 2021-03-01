@@ -76,6 +76,8 @@ apps:
       # Fallback to XWayland if running in a Wayland session.
       DISABLE_WAYLAND: 1
     plugs:
+      - audio-playback
+      - audio-record
       - browser-support
       - camera
       - home
