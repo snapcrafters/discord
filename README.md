@@ -4,12 +4,9 @@
   Discord
 </h1>
 
-<p align="center"><b>This is the snap for Discord</b>, <i>"an all-in-one voice
-and text chat for gamers that's free, secure, and works on both your desktop
-and phone"</i>. It works on Ubuntu, Fedora, Debian, and other major Linux
-distributions.</p>
+<p align="center"><b>This is the snap for Discord</b>, <i>"Whether you're part of a school club, gaming group, worldwide art community, or just a handful of friends that want to spend time together, Discord makes it easy to talk every day and hang out more often."</i>. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.</p>
 <p align="center">
-<a href="https://build.snapcraft.io/user/snapcrafters/discord"><img src="https://build.snapcraft.io/badge/snapcrafters/discord.svg" alt="Snap Status"></a>
+<a href="https://snapcraft.io/discord"><img src="https://snapcraft.io/discord/badge.svg" alt="Snap Status"></a>
 </p>
 
 ## Install
