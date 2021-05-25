@@ -1,10 +1,8 @@
 <h1 align="center">
-  <img src="https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png" alt="Discord">
-  <br />
-  Discord
+  <img src="https://discord.com/assets/ff41b628a47ef3141164bfedb04fb220.png" alt="Discord">
 </h1>
 
-<p align="center"><b>This is the snap for Discord</b>, <i>"Whether you're part of a school club, gaming group, worldwide art community, or just a handful of friends that want to spend time together, Discord makes it easy to talk every day and hang out more often."</i>. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.</p>
+<p align="center"><b>This is the snap for Discord</b>, <i>"Discord is the easiest way to communicate over voice, video, and text. Chat, hang out, and stay close with your friends and communities."</i>. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.</p>
 <p align="center">
 <a href="https://snapcraft.io/discord"><img src="https://snapcraft.io/discord/badge.svg" alt="Snap Status"></a>
 </p>
