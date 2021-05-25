@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://discord.com/assets/ff41b628a47ef3141164bfedb04fb220.png" alt="Discord">
+  <img src="https://discord.com/assets/ff41b628a47ef3141164bfedb04fb220.png" alt="Discord" width="50%">
 </h1>
 
 <p align="center"><b>This is the snap for Discord</b>, <i>"Discord is the easiest way to communicate over voice, video, and text. Chat, hang out, and stay close with your friends and communities."</i>. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.</p>
