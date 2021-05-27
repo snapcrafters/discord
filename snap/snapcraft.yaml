@@ -1,11 +1,10 @@
 name: discord
 base: core18
 adopt-info: discord
-summary: Free voice and text chat
+summary: Chat for Communities and Friends
 description: |
- Whether you're part of a school club, gaming group, worldwide art community,
- or just a handful of friends that want to spend time together,
- Discord makes it easy to talk every day and hang out more often.
+ Discord is the easiest way to communicate over voice, video and text.
+ Chat, hang out, and stay close with your friends and communities.
 
 grade: stable
 confinement: strict
