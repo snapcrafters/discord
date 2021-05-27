@@ -15,6 +15,27 @@ architectures:
 compression: lzo
 
 parts:
+  disable-updater:
+    plugin: nil
+    override-pull: |
+      cat <<'EOF' > disable-updater.sh
+      #!/bin/bash
+      CONFIG_FILE="$SNAP_USER_DATA"/.config/discord/settings.json
+      if ! [ -f "$CONFIG_FILE" ]; then
+        echo '{}' > "$CONFIG_FILE"
+      fi
+      ORIG_JSON=$(cat "$CONFIG_FILE")
+      NEW_JSON=$(jq '.SKIP_HOST_UPDATE = true' < "$CONFIG_FILE")
+      if [ "$ORIG_JSON" != "$NEW_JSON" ]; then
+        echo "$NEW_JSON" > "$CONFIG_FILE"
+      fi
+      exec "$@"
+      EOF
+    override-build: |
+      install -m755 -D -t $SNAPCRAFT_PART_INSTALL/bin disable-updater.sh
+    stage-packages:
+      - jq
+
   libappindicator:
     plugin: nil
     stage-packages:
@@ -50,6 +71,7 @@ parts:
       - xdg-utils
     prime:
       - -usr/bin/xdg-open
+
   cleanup:
     after: [discord]
     plugin: nil
@@ -63,6 +85,7 @@ apps:
   discord:
     extensions: [gnome-3-28]
     command: usr/share/discord/Discord --no-sandbox
+    command-chain: [bin/disable-updater.sh]
     autostart: discord.desktop
     desktop: usr/share/applications/discord.desktop
     environment:
