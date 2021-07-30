@@ -1,0 +1,60 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Tell us what happened.
+      placeholder: The app crashed when I...
+    validations:
+      required: true
+  - type: textarea
+    id: what-expected
+    attributes:
+      label: What should have happened?
+      description: Tell us what you expected to happen.
+      placeholder: When I ... the app should ...
+    validations:
+      required: true
+  - type: textarea
+    id: snap-info
+    attributes:
+      label: Output of `snap info discord`
+      description: Please run `snap info discord` in a terminal and paste the output here. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: snap-connections
+    attributes:
+      label: Output of `snap connections discord`
+      description: Please run `snap connections discord` in a terminal and paste the output here. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: snap-version
+    attributes:
+      label: Output of `snap version`
+      description: Please run `snap version` in a terminal and paste the output here. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant `DENIED` messages in `dmesg` output or your kernel log file in `/var/log`. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: teminal-output
+    attributes:
+      label: Teminal output of app
+      description: Please try running the app in a terminal and paste the output here. This will be automatically formatted into code, so no need for backticks.
+      render: shell
