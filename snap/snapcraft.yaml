@@ -35,17 +35,7 @@ parts:
     stage-packages:
       - jq
 
-  libappindicator:
-    plugin: nil
-    stage-packages:
-      - libappindicator3-1
-    prime:
-      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libdbusmenu*.so*
-      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libappindicator*.so*
-      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libindicator*.so*
-
   discord:
-    after: [libappindicator]
     plugin: dump
     source: "https://discord.com/api/download?platform=linux&format=deb"
     source-type: deb
