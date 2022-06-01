@@ -3,8 +3,8 @@ base: core20
 adopt-info: discord
 summary: Chat for Communities and Friends
 description: |
- Discord is the easiest way to communicate over voice, video and text.
- Chat, hang out, and stay close with your friends and communities.
+  Discord is the easiest way to communicate over voice, video and text.
+  Chat, hang out, and stay close with your friends and communities.
 
 grade: stable
 confinement: strict
@@ -70,10 +70,15 @@ parts:
         cd /snap/gnome-3-38-2004/current
         find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
 
+plugs:
+  shmem:
+    interface: shared-memory
+    private: true
+
 apps:
   discord:
     extensions: [gnome-3-38]
-    command: usr/share/discord/Discord --no-sandbox
+    command: usr/share/discord/Discord --use-tray-icon --no-sandbox --disable-seccomp-filter-sandbox
     command-chain: [bin/disable-updater.sh]
     autostart: discord.desktop
     desktop: usr/share/applications/discord.desktop
@@ -81,16 +86,12 @@ apps:
       # Correct the TMPDIR path for Chromium Framework/Electron to
       # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
-      # Coerce XDG_CURRENT_DESKTOP to Unity so that App Indicators
-      # are used and do not fall back to Notification Area applets
-      # or disappear completely.
-      XDG_CURRENT_DESKTOP: Unity
       # Fallback to XWayland if running in a Wayland session.
       DISABLE_WAYLAND: 1
+      GTK_USE_PORTAL: 1
     plugs:
       - audio-playback
       - audio-record
-      - browser-support
       - camera
       - home
       - mount-observe
@@ -100,5 +101,5 @@ apps:
       - process-control
       - removable-media
       - screen-inhibit-control
+      - shmem
       - system-observe
-      - unity7
