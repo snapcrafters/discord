@@ -1,5 +1,5 @@
 name: discord
-base: core20
+base: core22
 adopt-info: discord
 summary: Chat for Communities and Friends
 description: |
@@ -31,23 +31,23 @@ parts:
       exec "$@"
       EOF
     override-build: |
-      install -m755 -D -t $SNAPCRAFT_PART_INSTALL/bin disable-updater.sh
+      install -m755 -D -t $CRAFT_PART_INSTALL/bin disable-updater.sh
     stage-packages:
       - jq
 
   discord:
-    plugin: dump
-    source: "https://discord.com/api/download?platform=linux&format=deb"
-    source-type: deb
+    plugin: nil
     override-build: |
-      snapcraftctl build
+      craftctl default
       DEB_API="https://discord.com/api/download?platform=linux&format=deb"
       DEB_URL=$(curl -w "%{url_effective}\n" -I -L -s -S "${DEB_API}" -o /dev/null)
+      curl -o discord.deb $DEB_URL
+      dpkg-deb -xv discord.deb $CRAFT_PART_INSTALL/
       VERSION=$(echo "${DEB_URL}" | cut -d'/' -f6)
-      snapcraftctl set-version $(echo $VERSION)
-      rm $SNAPCRAFT_PART_INSTALL/usr/share/discord/chrome-sandbox
+      craftctl set version=$(echo $VERSION)
+      rm $CRAFT_PART_INSTALL/usr/share/discord/chrome-sandbox
       # Correct path to icon.
-      sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${SNAPCRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
+      sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
     build-packages:
       - curl
       - sed
@@ -64,11 +64,11 @@ parts:
   cleanup:
     after: [discord]
     plugin: nil
-    build-snaps: [ gnome-3-38-2004 ]
+    build-snaps: [ gnome-42-2204 ]
     override-prime: |
         set -eux
-        cd /snap/gnome-3-38-2004/current
-        find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
+        cd /snap/gnome-42-2204/current
+        find . -type f,l -exec rm -f $CRAFT_PRIME/{} \;
 
 plugs:
   shmem:
@@ -77,7 +77,7 @@ plugs:
 
 apps:
   discord:
-    extensions: [gnome-3-38]
+    extensions: [gnome]
     command: usr/share/discord/Discord --use-tray-icon --no-sandbox --disable-seccomp-filter-sandbox
     command-chain: [bin/disable-updater.sh]
     autostart: discord.desktop
