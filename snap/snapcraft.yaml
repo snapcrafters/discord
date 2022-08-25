@@ -103,3 +103,4 @@ apps:
       - screen-inhibit-control
       - shmem
       - system-observe
+      - unity7
