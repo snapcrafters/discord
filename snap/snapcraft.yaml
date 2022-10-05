@@ -8,6 +8,8 @@ description: |
 
 grade: stable
 confinement: strict
+assumes:
+- snapd2.54
 
 architectures:
   - build-on: amd64
