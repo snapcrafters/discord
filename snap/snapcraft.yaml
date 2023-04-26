@@ -40,6 +40,12 @@ parts:
     stage-packages:
       - jq
 
+  launcher:
+    plugin: dump
+    source: launcher
+    override-build: |
+      cp launcher $CRAFT_PART_INSTALL/
+
   discord:
     plugin: nil
     override-build: |
@@ -83,7 +89,7 @@ plugs:
 apps:
   discord:
     extensions: [gnome]
-    command: usr/share/discord/Discord --use-tray-icon --no-sandbox --disable-seccomp-filter-sandbox
+    command: launcher
     command-chain: [bin/disable-updater.sh]
     autostart: discord.desktop
     desktop: usr/share/applications/discord.desktop
@@ -91,8 +97,6 @@ apps:
       # Correct the TMPDIR path for Chromium Framework/Electron to
       # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
-      # Fallback to XWayland if running in a Wayland session.
-      DISABLE_WAYLAND: 1
       GTK_USE_PORTAL: 1
     plugs:
       - audio-playback
