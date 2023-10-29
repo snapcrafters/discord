@@ -98,6 +98,7 @@ apps:
       # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
       GTK_USE_PORTAL: 1
+      DISABLE_WAYLAND: 1
     plugs:
       - audio-playback
       - audio-record
