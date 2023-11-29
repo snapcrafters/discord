@@ -1,11 +1,29 @@
 name: discord
-base: core22
-version: 0.0.36
+title: Discord
 summary: Chat for Communities and Friends
 description: |
-  Discord is the easiest way to communicate over voice, video and text.
-  Chat, hang out, and stay close with your friends and communities.
+  Discord is the easiest way to communicate over voice, video, and text. Chat, hang out, and stay close with your friends and communities.
 
+  Snaps are confined, as such Discord may be unable to perform some of the tasks it typically does when unconfined. This may result in the system log getting spammed with apparmor errors. Granting access to the system-observe interface when in the snap will enable the features, and thus reduce the logging.
+
+  ```
+  snap connect discord:system-observe
+  ```
+
+  **Authors**
+
+  This snap is maintained by the Snapcrafters community, and is not necessarily endorsed or officially maintained by the upstream developers.
+
+website: https://discord.com/
+contact: https://github.com//snapcrafters/discord/issues
+issues: https://github.com//snapcrafters/discord/issues
+source-code: https://github.com//snapcrafters/discord
+license: Proprietary
+icon: discord.webp
+version: 0.0.36
+
+
+base: core22
 grade: stable
 confinement: strict
 assumes:
