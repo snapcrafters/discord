@@ -144,8 +144,16 @@ jobs:
           # Declare an array to keep track of the revisions we've seen
           revisions=()
 
+          # Handle the case where architectures is a simple list of strings
+          archs="$(cat snap/snapcraft.yaml | yq -r -I=0 -o=json '.architectures[]')"
+
+          # Handle the case where architectures is a list of objects
+          if echo "$archs" | grep -q "build-on"; then
+              archs="$(cat snap/snapcraft.yaml | yq -r -I=0 -o=json '.architectures[]."build-on"')"
+          fi
+
           # Iterate over the architectures specified in the snapcraft.yaml
-          for arch in $(cat snap/snapcraft.yaml | yq '.architectures[]'); do
+          for arch in $archs; do
               rev="$(snapcraft list-revisions "${{ env.SNAP_NAME }}" --arch "$arch" | grep "latest/candidate*" | head -n1 | cut -d' ' -f1)"
               revisions+=("$rev")
               # Add a row to the HTML table
