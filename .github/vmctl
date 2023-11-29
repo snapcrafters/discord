@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Default VM attributes - tuned for Github Actions runners by default
+VM_NAME="${VM_NAME:-test-vm}"
+VM_SERIES="${VM_SERIES:-22.04}"
+VM_CPUS="${VM_CPUS:=1}"
+VM_MEM_GIB="${VM_MEM_GIB:=6}"
+VM_DISK_GIB="${VM_DISK_GIB:=12}"
+
+build_runner_script() {
+  vmctl_runner="$(mktemp)"
+  chmod +x "$vmctl_runner"
+  cat <<-EOF > "$vmctl_runner"
+#!/usr/bin/env bash
+
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+export WAYLAND_DISPLAY=wayland-0
+export DISPLAY=:0.0
+export HOME=/home/ubuntu
+
+exec "\$@"
+EOF
+
+  echo "$vmctl_runner"
+}
+
+# If we're on a Github Actions Runner, enable KVM.
+enable_kvm_gha() {
+  if [[ -x "${GITHUB_ACTIONS:-}" ]]; then
+    echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger --name-match=kvm
+  fi
+}
+
+# Starts a desktop VM and waits for the agent to be running inside.
+prepare_vm() {
+  # Start the VM
+  lxc launch "images:ubuntu/${VM_SERIES}/desktop" "${VM_NAME}" --vm \
+    -c limits.cpu="${VM_CPUS}" -c limits.memory="${VM_MEM_GIB}GiB" -d root,size="${VM_DISK_GIB}GiB"
+
+  # Wait for the VM agent to be running
+  while ! lxc exec test-vm -- cat /etc/hostname &>/dev/null; do 
+    sleep 2
+  done
+
+  # Push script runner into the VM
+  lxc file push "$(build_runner_script)" test-vm/bin/vmctl-runner
+  lxc exec test-vm -- chmod 755 /bin/vmctl-runner
+
+  # Install gnome-screenshot
+  lxc exec test-vm -- apt-get update
+  lxc exec test-vm -- apt-get install -y gnome-screenshot
+
+  # Kill the gnome initial setup wizard
+  pid="$(lxc exec test-vm -- pidof gnome-initial-setup)"
+  lxc exec test-vm -- kill -9 "$pid"
+}
+
+# Exec a command in the VM using the wrapper.
+exec_in_vm() {
+  lxc exec test-vm -- sudo -u ubuntu bash -c "/bin/vmctl-runner $@"
+}
+
+# Takes a screenshot of the full screen and pulls the file back from the VM to a file
+# named "screenshot-screen.png", and uploads to imgur, returning the URL
+screenshot_full() {
+  # Take a screenshot of the whole screen in the VM
+  exec_in_vm "gnome-screenshot -f /home/ubuntu/screen.png"
+  # Pull the screenshot back to the host
+  lxc file pull test-vm/home/ubuntu/screen.png screenshot-screen.png
+}
+
+# Takes a screenshot of the active window and pulls the file back from the VM to a file
+# named "screenshot-window.png", and uploads to imgur, returning the URL
+screenshot_window() {
+  # Take a screenshot of the active window in the VM
+  exec_in_vm "gnome-screenshot -w -f /home/ubuntu/window.png"
+  # Pull the screenshot back to the host
+  lxc file pull test-vm/home/ubuntu/window.png screenshot-window.png
+}
+
+# Print the usage statement and exit the program
+usage() {
+  echo "Usage: vmctl [prepare | push-snap <file> | exec <string> | screenshot-full | screenshot-window"]
+  exit 1
+}
+
+# Parse the subcommand and exit if empty, printing the usage
+command="${1:-}"; shift
+if [[ -z "$command" ]]; then
+  usage
+fi
+
+case "$command" in
+  "prepare")
+    enable_kvm_gha
+    prepare_vm
+    ;;
+  "exec")
+    exec_in_vm "$@"
+    ;;
+  "screenshot-full")
+    screenshot_full
+    ;;
+  "screenshot-window")
+    screenshot_window
+    ;;
+  *)
+    usage
+    ;;
+esac
