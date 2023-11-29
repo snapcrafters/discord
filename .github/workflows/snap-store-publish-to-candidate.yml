@@ -195,7 +195,7 @@ jobs:
           .github/vmctl prepare
           .github/vmctl exec "sudo snap install ${{ env.SNAP_NAME }} --channel candidate"
           .github/vmctl exec "snap run ${{ env.SNAP_NAME }} &>/home/ubuntu/${{ env.SNAP_NAME }}.log &"
-          sleep 20
+          sleep 45
 
       - name: Gather screenshots
         run: |
