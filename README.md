@@ -8,6 +8,9 @@
 
 <p align="center">
 <a href="https://snapcraft.io/discord"><img src="https://snapcraft.io/discord/badge.svg" alt="Snap Status"></a>
+<a href="https://github.com/snapcrafters/discord/actions/workflows/sync-version-with-upstream.yml"><img src="https://github.com/snapcrafters/discord/actions/workflows/sync-version-with-upstream.yml/badge.svg"></a>
+<a href="https://github.com/snapcrafters/discord/actions/workflows/release-to-candidate.yaml"><img src="https://github.com/snapcrafters/discord/actions/workflows/release-to-candidate.yaml/badge.svg"></a>
+<a href="https://github.com/snapcrafters/discord/actions/workflows/promote-to-stable.yml"><img src="https://github.com/snapcrafters/discord/actions/workflows/promote-to-stable.yml/badge.svg"></a>
 </p>
 
 ## Install
@@ -86,10 +89,10 @@ Now that your git metadata has been updated you are ready to create a bugfix bra
 
 ## Maintainers
 
-* [@popey](https://github.com/popey)
-* [@lucyllewy](https://github.com/lucyllewy)
+- [@popey](https://github.com/popey)
+- [@lucyllewy](https://github.com/lucyllewy)
 
 ## License
 
-* The license of both the build files in this repository are MIT.
-* Discord itself is a proprietary application.
+- The license of both the build files in this repository are MIT.
+- Discord itself is a proprietary application.
