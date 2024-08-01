@@ -1,10 +1,9 @@
 #!/bin/bash
 
-if [ ! -d "$SNAP_USER_DATA"/.config/discord ]; then
-    mkdir -p "$SNAP_USER_DATA"/.config/discord
-fi
+CONFIG_DIR=${XDG_CONFIG_HOME:-$SNAP_USER_DATA/.config}/discord
+mkdir -p "$CONFIG_DIR"
 
-CONFIG_FILE="$SNAP_USER_DATA"/.config/discord/settings.json
+CONFIG_FILE="$CONFIG_DIR"/settings.json
 if ! [ -f "$CONFIG_FILE" ]; then
     echo '{}' > "$CONFIG_FILE"
 fi
