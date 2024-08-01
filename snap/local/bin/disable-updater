@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ ! -d "$SNAP_USER_DATA"/.config/discord ]; then
+    mkdir -p "$SNAP_USER_DATA"/.config/discord
+fi
+
+CONFIG_FILE="$SNAP_USER_DATA"/.config/discord/settings.json
+if ! [ -f "$CONFIG_FILE" ]; then
+    echo '{}' > "$CONFIG_FILE"
+fi
+
+ORIG_JSON=$(cat "$CONFIG_FILE")
+NEW_JSON=$(jq '.SKIP_HOST_UPDATE = true' < "$CONFIG_FILE")
+if [ "$ORIG_JSON" != "$NEW_JSON" ]; then
+    echo "$NEW_JSON" > "$CONFIG_FILE"
+fi
+
+exec "$@"

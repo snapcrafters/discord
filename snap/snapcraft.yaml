@@ -20,79 +20,34 @@ license: Proprietary
 icon: snap/discord.png
 version: 0.0.62
 
-
-base: core22
+base: core24
 grade: stable
 confinement: strict
-assumes:
-- snapd2.54
-
-architectures:
-  - build-on: amd64
 compression: lzo
 
+assumes:
+  - snapd2.54
+
+platforms:
+  amd64:
+
 parts:
-  disable-updater:
-    plugin: nil
-    override-pull: |
-      cat <<'EOF' > disable-updater.sh
-      #!/bin/bash
-      if [ ! -d "$SNAP_USER_DATA"/.config/discord ]; then
-        mkdir -p "$SNAP_USER_DATA"/.config/discord
-      fi
-      CONFIG_FILE="$SNAP_USER_DATA"/.config/discord/settings.json
-      if ! [ -f "$CONFIG_FILE" ]; then
-        echo '{}' > "$CONFIG_FILE"
-      fi
-      ORIG_JSON=$(cat "$CONFIG_FILE")
-      NEW_JSON=$(jq '.SKIP_HOST_UPDATE = true' < "$CONFIG_FILE")
-      if [ "$ORIG_JSON" != "$NEW_JSON" ]; then
-        echo "$NEW_JSON" > "$CONFIG_FILE"
-      fi
-      exec "$@"
-      EOF
-    override-build: |
-      install -m755 -D -t $CRAFT_PART_INSTALL/bin disable-updater.sh
+  launcher:
+    plugin: dump
+    source: snap/local
+    source-type: local
     stage-packages:
       - jq
 
-  launcher:
-    plugin: dump
-    source: launcher
-    override-build: |
-      cp launcher $CRAFT_PART_INSTALL/
-
   discord:
-    plugin: nil
+    plugin: dump
+    source: https://dl.discordapp.net/apps/linux/${SNAPCRAFT_PROJECT_VERSION}/discord-${SNAPCRAFT_PROJECT_VERSION}.deb
+    source-type: deb
     override-build: |
       craftctl default
-      curl -o discord.deb "https://dl.discordapp.net/apps/linux/${SNAPCRAFT_PROJECT_VERSION}/discord-${SNAPCRAFT_PROJECT_VERSION}.deb"
-      dpkg-deb -xv discord.deb $CRAFT_PART_INSTALL/
-
-      rm $CRAFT_PART_INSTALL/usr/share/discord/chrome-sandbox
-      # Correct path to icon.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
-    build-packages:
-      - curl
-      - sed
-    stage-packages:
-      - libatomic1
-      - libc++1
-      - libnspr4
-      - libnss3
-      - libxss1
-      - xdg-utils
     prime:
-      - -usr/bin/xdg-open
-
-  cleanup:
-    after: [discord]
-    plugin: nil
-    build-snaps: [ gnome-42-2204 ]
-    override-prime: |
-        set -eux
-        cd /snap/gnome-42-2204/current
-        find . -type f,l -exec rm -f $CRAFT_PRIME/{} \;
+      - -usr/share/discord/chrome-sandbox
 
 plugs:
   shmem:
@@ -102,15 +57,14 @@ plugs:
 apps:
   discord:
     extensions: [gnome]
-    command: launcher
-    command-chain: [bin/disable-updater.sh]
+    command: bin/launcher
+    command-chain: [bin/disable-updater]
     autostart: discord.desktop
     desktop: usr/share/applications/discord.desktop
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to
       # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
-      GTK_USE_PORTAL: 1
       DISABLE_WAYLAND: 1
     plugs:
       - audio-playback
@@ -120,7 +74,6 @@ apps:
       - mount-observe
       - network
       - network-observe
-      - opengl
       - process-control
       - removable-media
       - screen-inhibit-control
