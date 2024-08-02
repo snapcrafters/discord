@@ -46,6 +46,13 @@ parts:
     override-build: |
       craftctl default
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
+    stage-packages:
+      - libatomic1
+      - libc++1
+      - libnspr4
+      - libnss3
+      - libxss1
+      - xdg-utils
     prime:
       - -usr/share/discord/chrome-sandbox
 
