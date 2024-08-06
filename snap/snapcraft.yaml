@@ -18,7 +18,7 @@ issues: https://github.com//snapcrafters/discord/issues
 source-code: https://github.com//snapcrafters/discord
 license: Proprietary
 icon: snap/discord.png
-version: 0.0.62
+version: 0.0.63
 
 base: core24
 grade: stable
