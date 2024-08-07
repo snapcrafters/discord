@@ -73,6 +73,9 @@ apps:
       # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
       DISABLE_WAYLAND: 1
+      # Included temporarily until https://github.com/snapcore/snapcraft-desktop-integration/issues/28
+      # is resolved.
+      NOTIFY_IGNORE_PORTAL: 1
     plugs:
       - audio-playback
       - audio-record
