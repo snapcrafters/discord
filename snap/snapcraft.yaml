@@ -20,7 +20,7 @@ license: Proprietary
 icon: snap/discord.png
 version: 0.0.68
 
-base: core24
+base: core22  # Reverted to core22 as a temporary workaround for https://github.com/snapcrafters/discord/issues/233
 grade: stable
 confinement: strict
 compression: lzo
@@ -28,8 +28,8 @@ compression: lzo
 assumes:
   - snapd2.54
 
-platforms:
-  amd64:
+architectures:
+  - amd64
 
 parts:
   launcher:
