@@ -20,7 +20,7 @@ license: Proprietary
 icon: snap/discord.png
 version: 0.0.69
 
-base: core22  # Reverted to core22 as a temporary workaround for https://github.com/snapcrafters/discord/issues/233
+base: core22 # Reverted to core22 as a temporary workaround for https://github.com/snapcrafters/discord/issues/233
 grade: stable
 confinement: strict
 compression: lzo
@@ -55,6 +55,7 @@ parts:
       - xdg-utils
     prime:
       - -usr/share/discord/chrome-sandbox
+      - -usr/bin/xdg-open
 
 plugs:
   shmem:
