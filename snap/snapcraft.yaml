@@ -26,7 +26,7 @@ confinement: strict
 compression: lzo
 
 assumes:
-  - snapd2.54
+  - snapd2.66
 
 architectures:
   - amd64
@@ -58,6 +58,9 @@ parts:
       - -usr/bin/xdg-open
 
 plugs:
+  desktop:
+    desktop-file-ids: [discord]
+
   shmem:
     interface: shared-memory
     private: true
