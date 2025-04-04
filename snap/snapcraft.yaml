@@ -64,7 +64,7 @@ parts:
     source-subdir: electron
     plugin: nil
     override-build: |
-      pip install asarPy --break-system-packages
+      pip install asarPy
       python3 $CRAFT_PART_SRC_WORK/patch-desktop-filename.py $CRAFT_STAGE/usr/share/discord/resources/app.asar
 
 plugs:
