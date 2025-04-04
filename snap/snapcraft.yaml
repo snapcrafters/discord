@@ -65,7 +65,7 @@ parts:
     plugin: nil
     override-build: |
       pip install asarPy
-      python3 $CRAFT_PART_SRC_WORK/patch-desktop-filename.py $CRAFT_STAGE/usr/share/discord/resources/app.asar
+      python3 "${CRAFT_PART_SRC_WORK}/patch-desktop-filename.py" "${CRAFT_STAGE}/usr/share/discord/resources/app.asar"
 
 plugs:
   shmem:
