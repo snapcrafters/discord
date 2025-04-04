@@ -61,11 +61,12 @@ parts:
   patch-desktop-file-name:
     after: [discord]
     source: https://github.com/snapcrafters/patch-desktop-file-name.git
+    source-branch: uv-standalone
     source-subdir: electron
     plugin: nil
+    build-snaps: [astral-uv]
     override-build: |
-      pip install asarPy
-      python3 "${CRAFT_PART_SRC_WORK}/patch-desktop-filename.py" "${CRAFT_STAGE}/usr/share/discord/resources/app.asar"
+      ./patch_desktop_file_name.py "${CRAFT_STAGE}/usr/share/discord/resources/app.asar"
 
 plugs:
   shmem:
