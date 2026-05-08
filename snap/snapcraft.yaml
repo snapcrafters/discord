@@ -46,6 +46,7 @@ parts:
     override-build: |
       craftctl default
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
+      mv ${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap ${CRAFT_PART_INSTALL}/usr/bin/updater_bootstrap
     stage-packages:
       - libatomic1
       - libc++1
