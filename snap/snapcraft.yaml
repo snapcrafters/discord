@@ -46,7 +46,9 @@ parts:
     override-build: |
       craftctl default
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
-      mv ${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap ${CRAFT_PART_INSTALL}/usr/bin/updater_bootstrap
+      mkdir -p "${CRAFT_PART_BUILD}/download"
+      "${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap" --no-zenity "${CRAFT_PART_BUILD}/download" stable https://updates.discord.com
+      cp -r "${CRAFT_PART_BUILD}/download/app-$SNAPCRAFT_PROJECT_VERSION"/* "${CRAFT_PART_INSTALL}/usr/share/discord/"
     stage-packages:
       - libatomic1
       - libc++1
@@ -57,6 +59,15 @@ parts:
     prime:
       - -usr/share/discord/chrome-sandbox
       - -usr/bin/xdg-open
+
+  patch-desktop-file-name:
+    after: [discord]
+    plugin: nil
+    build-snaps: [astral-uv]
+    override-build: |
+      uv run \
+        https://raw.githubusercontent.com/snapcrafters/patch-desktop-file-name/refs/heads/main/electron/patch-desktop-filename.py \
+        "${CRAFT_STAGE}/usr/share/discord/resources/app.asar"
 
 plugs:
   shmem:
