@@ -25,4 +25,15 @@ jobs:
             DEB_API="https://discord.com/api/download?platform=linux&format=deb"
             DEB_URL=$(curl -w "%{url_effective}\n" -I -L -s -S "${DEB_API}" -o /dev/null)
             VERSION=$(echo "${DEB_URL}" | cut -d'/' -f6)
+
+            # Verify the Discord update server is already serving this version.
+            # The bootstrapper fetches the real app from updates.discord.com at
+            # build time. If the server has not propagated yet, we would build a
+            # snap labelled $VERSION but containing the previous release.
+            UPDATE_SERVER_VERSION=$(curl -s "https://discord.com/api/updates/stable?platform=linux" | jq -r '.name')
+            if [ "$UPDATE_SERVER_VERSION" != "$VERSION" ]; then
+              echo "Skipping: .deb is $VERSION but update server reports $UPDATE_SERVER_VERSION - not yet propagated."
+              exit 0
+            fi
+
             sed -i 's/^\(version: \).*$/\1'"$VERSION"'/' snap/snapcraft.yaml
