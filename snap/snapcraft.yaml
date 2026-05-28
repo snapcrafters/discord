@@ -58,6 +58,15 @@ parts:
       "${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap" --no-zenity "${CRAFT_PART_BUILD}/download" stable https://updates.discord.com
       cp -r ${CRAFT_PART_BUILD}/download/app-*/* "${CRAFT_PART_INSTALL}/usr/share/discord/"
 
+      # Assert that the bootstrapper downloaded the version we expect.
+      # If the update server lagged at build time this will be the previous
+      # release. Fail fast rather than publishing a mislabelled snap.
+      DOWNLOADED_VERSION=$(jq -r '.version' "${CRAFT_PART_INSTALL}/usr/share/discord/resources/build_info.json")
+      if [ "$DOWNLOADED_VERSION" != "$SNAPCRAFT_PROJECT_VERSION" ]; then
+        echo "ERROR: bootstrapper downloaded Discord $DOWNLOADED_VERSION but snap version is $SNAPCRAFT_PROJECT_VERSION"
+        exit 1
+      fi
+
       # The bootstrapper downloads modules into versioned directories
       # (e.g. modules/discord_desktop_core-1/discord_desktop_core/). At runtime,
       # Discord would normally install these from bootstrap zip files into a
