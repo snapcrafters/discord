@@ -52,20 +52,14 @@ parts:
       # The upstream .deb doesn't contain the actual Discord app — only a
       # bootstrapper (updater_bootstrap) that normally downloads Discord into
       # the user's home directory at runtime. Since snap confinement prevents
-      # that, we run the bootstrapper at build time instead.
-      
-      mkdir -p "${CRAFT_PART_BUILD}/download"
-      "${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap" --no-zenity "${CRAFT_PART_BUILD}/download" stable https://updates.discord.com
+      # that, we run the bootstrapper at build time against a pinned manifest.
+      python3 "${CRAFT_PROJECT_DIR}/snap/local/bin/generate-discord-updater-manifest" \
+        --version "${SNAPCRAFT_PROJECT_VERSION}" \
+        bootstrap \
+        --bootstrapper "${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap" \
+        --root "${CRAFT_PART_BUILD}/download" \
+        --module-lock "${CRAFT_PROJECT_DIR}/snap/local/discord-updater-modules.json"
       cp -r ${CRAFT_PART_BUILD}/download/app-*/* "${CRAFT_PART_INSTALL}/usr/share/discord/"
-
-      # Assert that the bootstrapper downloaded the version we expect.
-      # If the update server lagged at build time this will be the previous
-      # release. Fail fast rather than publishing a mislabelled snap.
-      DOWNLOADED_VERSION=$(jq -r '.version' "${CRAFT_PART_INSTALL}/usr/share/discord/resources/build_info.json")
-      if [ "$DOWNLOADED_VERSION" != "$SNAPCRAFT_PROJECT_VERSION" ]; then
-        echo "ERROR: bootstrapper downloaded Discord $DOWNLOADED_VERSION but snap version is $SNAPCRAFT_PROJECT_VERSION"
-        exit 1
-      fi
 
       # The bootstrapper downloads modules into versioned directories
       # (e.g. modules/discord_desktop_core-1/discord_desktop_core/). At runtime,
@@ -89,6 +83,7 @@ parts:
       mv /tmp/build_info.json "${CRAFT_PART_INSTALL}/usr/share/discord/resources/build_info.json"
     build-packages:
       - jq
+      - python3
     stage-packages:
       - libatomic1
       - libc++1

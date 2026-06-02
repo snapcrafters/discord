@@ -41,23 +41,25 @@ jobs:
 
             dpkg-deb -x "${CHECK_DIR}/discord.deb" "${CHECK_DIR}/deb"
 
+            MODULE_LOCK="${CHECK_DIR}/discord-updater-modules.json"
+            if ! python3 snap/local/bin/generate-discord-updater-manifest \
+              --version "${VERSION}" \
+              lock-modules \
+              --output "${MODULE_LOCK}"; then
+              echo "Skipping: Discord ${VERSION} updater manifest is not ready."
+              exit 0
+            fi
+
             DOWNLOAD_DIR="${CHECK_DIR}/download"
-            mkdir -p "${DOWNLOAD_DIR}"
-            if ! "${CHECK_DIR}/deb/usr/share/discord/updater_bootstrap" --no-zenity "${DOWNLOAD_DIR}" stable https://updates.discord.com; then
-              echo "Skipping: updater bootstrap failed."
+            if ! python3 snap/local/bin/generate-discord-updater-manifest \
+              --version "${VERSION}" \
+              bootstrap \
+              --bootstrapper "${CHECK_DIR}/deb/usr/share/discord/updater_bootstrap" \
+              --root "${DOWNLOAD_DIR}" \
+              --module-lock "${MODULE_LOCK}"; then
+              echo "Skipping: Discord ${VERSION} distro packages are not ready."
               exit 0
             fi
 
-            BUILD_INFO=$(find "${DOWNLOAD_DIR}" -path '*/resources/build_info.json' -print -quit)
-            if [ -z "${BUILD_INFO}" ]; then
-              echo "Skipping: updater bootstrap did not produce build_info.json."
-              exit 0
-            fi
-
-            DOWNLOADED_VERSION=$(jq -r '.version' "${BUILD_INFO}")
-            if [ "${DOWNLOADED_VERSION}" != "${VERSION}" ]; then
-              echo "Skipping: upstream reports ${VERSION} but updater bootstrap downloaded ${DOWNLOADED_VERSION}."
-              exit 0
-            fi
-
+            cp "${MODULE_LOCK}" snap/local/discord-updater-modules.json
             sed -i 's/^\(version: \).*$/\1'"$VERSION"'/' snap/snapcraft.yaml

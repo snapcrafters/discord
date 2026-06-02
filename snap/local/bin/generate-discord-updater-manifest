@@ -1,0 +1,348 @@
+#!/usr/bin/env python3
+"""Generate version-pinned Discord updater manifests.
+
+Discord publishes the latest .deb before updates.discord.com always serves the
+same version from its `latest` manifest. The sync workflow records the module
+list from Discord's matching updater manifest, and the snap build uses that
+lock to generate a version-pinned manifest from versioned .distro URLs. The
+script serves the pinned manifest to updater_bootstrap locally, then verifies
+the downloaded app version and modules before the snap consumes the payload.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+import urllib.error
+import urllib.request
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+
+UPDATER_MANIFEST_URL = (
+    "https://updates.discord.com/distributions/app/manifests/latest"
+    "?channel={channel}&platform=linux&arch=x64"
+)
+USER_AGENT = "snapcrafters-discord-updater-manifest"
+
+
+def parse_version(version: str) -> list[int]:
+    """Return Discord's dotted version string as updater manifest integers."""
+    parts = version.split(".")
+    if len(parts) != 3:
+        raise ValueError(f"expected MAJOR.MINOR.PATCH version, got {version!r}")
+    return [int(part) for part in parts]
+
+
+def distro_package_url(version: str, channel: str, path: str) -> str:
+    """Return the versioned .distro URL for an app or module artifact."""
+    return (
+        f"https://stable.dl2.discordapp.net/distro/app/{channel}/linux/x64/"
+        f"{version}/{path}"
+    )
+
+
+def sha256_url(url: str) -> str:
+    """Stream an artifact from Discord and return its SHA256 digest."""
+    digest = hashlib.sha256()
+    try:
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(request) as response:
+            while True:
+                chunk = response.read(1024 * 1024)
+                if not chunk:
+                    break
+                digest.update(chunk)
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"{url} returned HTTP {exc.code}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"failed to fetch {url}: {exc.reason}") from exc
+    return digest.hexdigest()
+
+
+def fetch_json(url: str) -> dict:
+    """Fetch a JSON object from a URL."""
+    try:
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(request) as response:
+            data = json.load(response)
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"{url} returned HTTP {exc.code}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"failed to fetch {url}: {exc.reason}") from exc
+
+    if not isinstance(data, dict):
+        raise RuntimeError(f"{url} did not return a JSON object")
+    return data
+
+
+def matching_upstream_manifest(version: str, channel: str) -> dict:
+    """Fetch Discord's updater manifest and require it to match the version."""
+    url = UPDATER_MANIFEST_URL.format(channel=channel)
+    manifest = fetch_json(url)
+    actual_version = ".".join(
+        str(part) for part in manifest.get("full", {}).get("host_version", [])
+    )
+    if actual_version != version:
+        raise RuntimeError(
+            f"updater manifest is for Discord {actual_version}, not {version}"
+        )
+    return manifest
+
+
+def write_module_lock(version: str, channel: str, output: Path) -> None:
+    """Write the module list from Discord's matching updater manifest."""
+    manifest = matching_upstream_manifest(version, channel)
+    modules = {
+        name: data.get("full", {}).get("module_version")
+        for name, data in sorted(manifest.get("modules", {}).items())
+    }
+    if not modules:
+        raise RuntimeError("updater manifest does not list any modules")
+    if not all(isinstance(module_version, int) for module_version in modules.values()):
+        raise RuntimeError("updater manifest contains a module without module_version")
+
+    lock = {
+        "version": version,
+        "channel": channel,
+        "modules": modules,
+        "required_modules": sorted(manifest.get("required_modules", [])),
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(lock, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def locked_module_versions(path: Path, version: str, channel: str) -> dict[str, int]:
+    """Read and validate module versions from the committed lock file."""
+    with path.open(encoding="utf-8") as file:
+        lock = json.load(file)
+
+    if lock.get("version") != version:
+        raise RuntimeError(f"{path} is for Discord {lock.get('version')}, not {version}")
+    if lock.get("channel") != channel:
+        raise RuntimeError(f"{path} is for {lock.get('channel')}, not {channel}")
+
+    modules = lock.get("modules")
+    if not isinstance(modules, dict) or not all(
+        isinstance(name, str) and isinstance(module_version, int)
+        for name, module_version in modules.items()
+    ):
+        raise RuntimeError(f"{path} does not contain valid module versions")
+    if not modules:
+        raise RuntimeError(f"{path} does not list any modules")
+    return modules
+
+
+def build_manifest(version: str, channel: str, modules: dict[str, int]) -> dict:
+    """Generate a minimal updater manifest pinned to one Discord version."""
+    version_parts = parse_version(version)
+    app_url = distro_package_url(version, channel, "full.distro")
+    module_manifests = {}
+    for name, module_version in modules.items():
+        module_url = distro_package_url(
+            version, channel, f"{name}/{module_version}/full.distro"
+        )
+        module_manifests[name] = {
+            "full": {
+                "host_version": version_parts,
+                "module_version": module_version,
+                "package_sha256": sha256_url(module_url),
+                "url": module_url,
+            },
+            "deltas": [],
+        }
+
+    return {
+        "full": {
+            "host_version": version_parts,
+            "package_sha256": sha256_url(app_url),
+            "url": app_url,
+        },
+        "deltas": [],
+        "modules": module_manifests,
+        "required_modules": sorted(modules),
+        "metadata_version": int(time.time()),
+        "required_update": True,
+    }
+
+
+class ManifestHandler(BaseHTTPRequestHandler):
+    """HTTP handler that serves the generated manifest to updater_bootstrap."""
+
+    manifest: bytes
+
+    def do_GET(self) -> None:  # noqa: N802 - inherited API
+        """Serve the generated manifest at the path updater_bootstrap requests."""
+        if self.path.startswith("/distributions/app/manifests/latest"):
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(self.manifest)))
+            self.end_headers()
+            self.wfile.write(self.manifest)
+            return
+
+        self.send_response(404)
+        self.end_headers()
+
+    def log_message(self, _format: str, *args: object) -> None:
+        """Silence the local HTTP server's request logging in CI output."""
+        return
+
+
+def serve_manifest(manifest_path: Path) -> ThreadingHTTPServer:
+    """Start a localhost manifest server and return the running server."""
+    ManifestHandler.manifest = manifest_path.read_bytes()
+    server = ThreadingHTTPServer(("127.0.0.1", 0), ManifestHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    return server
+
+
+def downloaded_version(root: Path) -> str | None:
+    """Read the installed app version from Discord's build_info.json."""
+    for build_info in root.glob("app-*/resources/build_info.json"):
+        with build_info.open(encoding="utf-8") as file:
+            data = json.load(file)
+        return data.get("version")
+    return None
+
+
+def missing_modules(root: Path, modules: list[str]) -> list[str]:
+    """Return expected modules that updater_bootstrap did not install."""
+    app_path = next((path for path in root.glob("app-*") if path.is_dir()), None)
+    if app_path is None:
+        return modules
+
+    modules_dir = app_path / "modules"
+    missing = []
+    for name in modules:
+        if not any(modules_dir.glob(f"{name}-*")):
+            missing.append(name)
+
+    return missing
+
+
+def bootstrap(
+    version: str,
+    channel: str,
+    bootstrapper: Path,
+    root: Path,
+    module_lock: Path,
+) -> int:
+    """Run updater_bootstrap against a generated manifest and validate output."""
+    modules = locked_module_versions(module_lock, version, channel)
+    root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        manifest_path = Path(tmp) / "manifest.json"
+        manifest = build_manifest(version, channel, modules)
+        manifest_path.write_text(
+            json.dumps(manifest, separators=(",", ":")), encoding="utf-8"
+        )
+        server = serve_manifest(manifest_path)
+        try:
+            host, port = server.server_address
+            repository_url = f"http://{host}:{port}/"
+            command = [
+                str(bootstrapper),
+                "--no-zenity",
+                str(root),
+                channel,
+                repository_url,
+            ]
+            result = subprocess.run(command, check=False)
+        finally:
+            server.shutdown()
+
+    if result.returncode != 0:
+        return result.returncode
+
+    actual_version = downloaded_version(root)
+    if actual_version != version:
+        print(
+            f"ERROR: updater bootstrap downloaded Discord {actual_version} "
+            f"but requested {version}",
+            file=sys.stderr,
+        )
+        return 1
+
+    missing_locked_modules = missing_modules(root, sorted(modules))
+    if missing_locked_modules:
+        print(
+            "ERROR: updater bootstrap did not download locked modules: "
+            + ", ".join(missing_locked_modules),
+            file=sys.stderr,
+        )
+        return 1
+
+    app_path = next((path for path in root.glob("app-*") if path.is_dir()), None)
+    bootstrap_manifest = (
+        app_path / "resources/bootstrap/manifest.json" if app_path is not None else None
+    )
+    if bootstrap_manifest is not None and bootstrap_manifest.exists():
+        with bootstrap_manifest.open(encoding="utf-8") as file:
+            required_modules = json.load(file)
+
+        if not isinstance(required_modules, dict):
+            raise RuntimeError(
+                f"unexpected bootstrap manifest shape: {bootstrap_manifest}"
+            )
+
+        missing_required_modules = missing_modules(root, sorted(required_modules))
+        if missing_required_modules:
+            print(
+                "ERROR: updater bootstrap did not download required modules: "
+                + ", ".join(missing_required_modules),
+                file=sys.stderr,
+            )
+            return 1
+
+    return 0
+
+
+def main() -> int:
+    """Parse CLI arguments and run the requested manifest command."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--version", required=True)
+    parser.add_argument("--channel", default="stable")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    lock_parser = subparsers.add_parser("lock-modules")
+    lock_parser.add_argument("--output", required=True, type=Path)
+
+    bootstrap_parser = subparsers.add_parser("bootstrap")
+    bootstrap_parser.add_argument("--bootstrapper", required=True, type=Path)
+    bootstrap_parser.add_argument("--root", required=True, type=Path)
+    bootstrap_parser.add_argument("--module-lock", required=True, type=Path)
+
+    args = parser.parse_args()
+
+    try:
+        if args.command == "lock-modules":
+            write_module_lock(args.version, args.channel, args.output)
+            return 0
+
+        if args.command == "bootstrap":
+            return bootstrap(
+                args.version,
+                args.channel,
+                args.bootstrapper,
+                args.root,
+                args.module_lock,
+            )
+    except Exception as exc:  # noqa: BLE001 - keep CI failure readable.
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
