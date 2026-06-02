@@ -41,18 +41,20 @@ parts:
 
   discord:
     plugin: dump
-    source: https://dl.discordapp.net/apps/linux/${SNAPCRAFT_PROJECT_VERSION}/discord-${SNAPCRAFT_PROJECT_VERSION}.deb
-    source-type: deb
+    source: https://dl.discordapp.net/apps/linux/${SNAPCRAFT_PROJECT_VERSION}/discord-${SNAPCRAFT_PROJECT_VERSION}.tar.gz
+    source-type: tar
+    organize:
+      Discord: usr/share/discord
     override-build: |
       craftctl default
 
       # Fix the .desktop file icon path for the snap.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
 
-      # The upstream .deb doesn't contain the actual Discord app — only a
-      # bootstrapper (updater_bootstrap) that normally downloads Discord into
-      # the user's home directory at runtime. Since snap confinement prevents
-      # that, we run the bootstrapper at build time instead.
+      # The upstream tarball contains a bootstrapper (updater_bootstrap) that
+      # normally downloads Discord into the user's home directory at runtime.
+      # Since snap confinement prevents that, we run the bootstrapper at build
+      # time instead.
       
       mkdir -p "${CRAFT_PART_BUILD}/download"
       "${CRAFT_PART_INSTALL}/usr/share/discord/updater_bootstrap" --no-zenity "${CRAFT_PART_BUILD}/download" stable https://updates.discord.com
