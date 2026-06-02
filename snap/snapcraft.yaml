@@ -43,10 +43,12 @@ parts:
     plugin: dump
     source: https://dl.discordapp.net/apps/linux/${SNAPCRAFT_PROJECT_VERSION}/discord-${SNAPCRAFT_PROJECT_VERSION}.tar.gz
     source-type: tar
-    organize:
-      Discord: usr/share/discord
     override-build: |
       craftctl default
+
+      mkdir -p "${CRAFT_PART_INSTALL}/usr/share/discord"
+      mv "${CRAFT_PART_INSTALL}/Discord"/* "${CRAFT_PART_INSTALL}/usr/share/discord/"
+      rmdir "${CRAFT_PART_INSTALL}/Discord"
 
       # Fix the .desktop file icon path for the snap.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
