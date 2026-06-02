@@ -36,6 +36,8 @@ parts:
     plugin: dump
     source: snap/local
     source-type: local
+    stage:
+      - -bin/generate-discord-updater-manifest
     stage-packages:
       - jq
 
