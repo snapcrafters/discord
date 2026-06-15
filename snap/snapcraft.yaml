@@ -122,6 +122,9 @@ apps:
       # Correct the TMPDIR path for Chromium Framework/Electron to
       # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
+      # Let Electron preload/renderer processes resolve bundled standalone
+      # updater modules such as discord_krisp with require('discord_krisp').
+      NODE_PATH: $SNAP/usr/share/discord/resources/standalone_modules
     plugs:
       - audio-playback
       - audio-record
