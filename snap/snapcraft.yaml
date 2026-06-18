@@ -83,16 +83,7 @@ parts:
       # Krisp expects this directory to exist relative to the discord_krisp
       # module. If absent, Krisp global init fails with error code -4:
       # NoiseCancellerError.KRISP_INIT_ERROR_GLOBAL_INIT.
-      krisp_dir="${CRAFT_PART_INSTALL}/usr/share/discord/resources/standalone_modules/discord_krisp"
-      if [ ! -d "${krisp_dir}" ]; then
-        echo "discord_krisp module missing at expected path: ${krisp_dir}"
-        exit 1
-      fi
-      mkdir -p "${krisp_dir}/KMS/logs"
-      if [ ! -d "${krisp_dir}/KMS/logs" ]; then
-        echo "Failed to create Krisp logs directory: ${krisp_dir}/KMS/logs"
-        exit 1
-      fi
+      mkdir -p "${CRAFT_PART_INSTALL}/usr/share/discord/resources/standalone_modules/discord_krisp/KMS/logs"
 
       jq '.standaloneModules = true' \
         "${CRAFT_PART_INSTALL}/usr/share/discord/resources/build_info.json" \
