@@ -51,9 +51,6 @@ parts:
       # Fix the .desktop file icon path for the snap.
       sed -i 's|Icon=discord|Icon=/usr/share/discord/discord\.png|' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
 
-      # Inject the missing MIME type into the desktop file so links work
-      sed -i 's/^Categories=.*/&\nMimeType=x-scheme-handler\/discord;/' ${CRAFT_PART_INSTALL}/usr/share/discord/discord.desktop
-
       # The upstream .deb doesn't contain the actual Discord app — only a
       # bootstrapper (updater_bootstrap) that normally downloads Discord into
       # the user's home directory at runtime. Since snap confinement prevents
