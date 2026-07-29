@@ -1,3 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-exec "$SNAP/usr/share/discord/Discord" --use-tray-icon --no-sandbox --disable-seccomp-filter-sandbox "$@"
+# Run the configure hook which sets defaults for any config options
+"${SNAP}/meta/hooks/configure"
+
+# Grab the config options
+use_x11="$(snapctl get use-x11)"
+
+# Define an array of command line options
+opts=(
+    "--use-tray-icon"
+    "--no-sandbox"
+    "--disable-seccomp-filter-sandbox"
+)
+
+# Discord's global key bindings currently do not work under native Wayland.
+# Preserve the previous X11 behaviour unless users explicitly opt out.
+# See: https://github.com/snapcrafters/discord/issues/362
+if [[ "${use_x11}" == "true" ]]; then
+    opts+=("--ozone-platform=x11")
+fi
+
+exec "${SNAP}/usr/share/discord/Discord" "${opts[@]}" "$@"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+use_x11="$(snapctl get use-x11)"
+if [[ -z "${use_x11}" ]]; then
+    snapctl set use-x11=true
+fi

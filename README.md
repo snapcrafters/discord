@@ -25,6 +25,12 @@ snap install discord
 
 ## Snap configuration
 
+| option       | default | description  |
+|--------------|---------|--------------|
+| use-x11      | true    | Whether or not to pass `--ozone-platform=x11` to Discord. This preserves global key bindings, such as push-to-talk, which currently do not work when Discord runs natively on Wayland. Set this to `false` to allow Electron to select its default display platform instead. |
+
+You can change Snap configuration by running `snap set discord <key>=<value>`. For example, `snap set discord use-x11=false`.
+
 Discord by default does not have access to check which games are running on your system. If you want to enable this, run the following command.
 
 ```shell
