@@ -116,6 +116,10 @@ plugs:
   shmem:
     interface: shared-memory
     private: true
+  dot-local-share-steam:
+    interface: personal-files
+    read:
+      - $HOME/.local/share/Steam
 
 apps:
   discord:
@@ -135,6 +139,7 @@ apps:
       - audio-playback
       - audio-record
       - camera
+      - dot-local-share-steam
       - home
       - mount-observe
       - network
