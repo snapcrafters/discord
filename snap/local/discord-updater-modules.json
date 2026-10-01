@@ -2,7 +2,7 @@
   "channel": "stable",
   "modules": {
     "discord_cloudsync": 1,
-    "discord_desktop_core": 1,
+    "discord_desktop_core": 2,
     "discord_dispatch": 1,
     "discord_erlpack": 1,
     "discord_game_utils": 1,
