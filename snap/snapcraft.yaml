@@ -36,8 +36,16 @@ parts:
     plugin: dump
     source: snap/local
     source-type: local
+    build-packages: [gcc, libc6-dev]
+    override-build: |
+      craftctl default
+      mkdir -p "${CRAFT_PART_INSTALL}/lib"
+      gcc -O2 -Wall -Wextra -Werror -fPIC -shared \
+        readonly-voice-model.c -ldl \
+        -o "${CRAFT_PART_INSTALL}/lib/discord-readonly-voice-model.so"
     stage:
       - -bin/generate-discord-updater-manifest
+      - -readonly-voice-model.c
     stage-packages:
       - jq
 

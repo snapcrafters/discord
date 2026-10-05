@@ -21,4 +21,7 @@ if [[ "${use_x11}" == "true" ]]; then
     opts+=("--ozone-platform=x11")
 fi
 
+# Apply the two-model read-only workaround and initialize the renderer's
+# existing OpenH264 command-line path in libffmpeg.
+export LD_PRELOAD="${SNAP}/lib/discord-readonly-voice-model.so${LD_PRELOAD:+:${LD_PRELOAD}}"
 exec "${SNAP}/usr/share/discord/Discord" "${opts[@]}" "$@"
