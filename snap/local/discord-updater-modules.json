@@ -8,6 +8,7 @@
     "discord_game_utils": 1,
     "discord_krisp": 1,
     "discord_modules": 1,
+    "discord_ndi": 1,
     "discord_rpc": 1,
     "discord_spellcheck": 1,
     "discord_sysimg": 1,
@@ -22,5 +23,5 @@
     "discord_utils",
     "discord_voice"
   ],
-  "version": "1.0.161"
+  "version": "1.0.162"
 }
