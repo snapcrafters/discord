@@ -61,6 +61,32 @@ __attribute__((constructor)) static void renderer_codec_path(void) {
         set_path(codec);
 }
 
+/* Chromium sets the path again after constructors run, so translate every
+ * setter call rather than only the initial renderer argument. See #389. */
+void ff_libopenh264_set_library_path(const char *path) {
+    void (*next)(const char *) =
+        dlsym(RTLD_NEXT, "ff_libopenh264_set_library_path");
+    if (!next)
+        return;
+
+    const char old_name[] = "libopenh264-2.5.1-linux64.7.so";
+    const char new_name[] = "libopenh264-2.7.0-linux64.8.so";
+    _Static_assert(sizeof(old_name) == sizeof(new_name), "codec name size");
+    char *replacement = NULL;
+
+    /* MediaEngineStore downloads 2.7.0 and deletes 2.5.1. Do not require
+     * the new asset to exist yet: its download is asynchronous. */
+    if (getenv("SNAP") && path && path[0] == '/' &&
+        !strcmp(strrchr(path, '/') + 1, old_name)) {
+        replacement = strdup(path);
+        if (replacement)
+            memcpy(strrchr(replacement, '/') + 1, new_name, sizeof(new_name));
+    }
+
+    next(replacement ? replacement : path);
+    free(replacement);
+}
+
 /* The voice loader requests r+b, but only reads these two models. */
 static const char *model_mode(const char *filename, const char *mode) {
     if (!filename || !mode ||
